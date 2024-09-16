@@ -21,9 +21,9 @@ public class SistemaLogia {
 
     public static void mostrarMenu() {
         System.out.println("\n Menú \n");
-        System.out.println("1.- Realizar una reserva");
-        System.out.println("2.- Consultar disponibilidad");
-        System.out.println("3.- Cancelar una reserva");
+        System.out.println("1.- ........................");
+        System.out.println("2.- ........................");
+        System.out.println("3.- ........................");
         System.out.println("4.- Salir \n");
     }
 
