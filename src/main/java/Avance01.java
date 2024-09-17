@@ -3,7 +3,7 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-public class SistemaLogiaMetodos7 {
+public class Avance01 {
 
     private static final Scanner scanner = new Scanner(System.in);
     private static final List<Integer> logias7Personas = new ArrayList<>();
