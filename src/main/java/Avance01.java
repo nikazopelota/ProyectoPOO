@@ -23,7 +23,7 @@ public class Avance01 {
     public static void inicializarLogias() {
         inicializarLogiasPorCapacidad(logias7Personas, 3);
         inicializarLogiasPorCapacidad(logias5Personas, 3);
-        inicializarLogiasPorCapacidad(logias3Personas, 4);
+        inicializarLogiasPorCapacidad(logias3Personas, 3);
     }
 
     private static void inicializarLogiasPorCapacidad(List<Integer> logias, int cantidad) {
@@ -33,9 +33,12 @@ public class Avance01 {
     }
 
     public static void inicializarUsuarios() {
-        usuarios.add("22184444320"); // Nikazo
-        usuarios.add("22184444321"); // Maria
-        usuarios.add("22184444322"); // Juan
+        usuarios.add("21212121k21"); // Nikazo
+        usuarios.add("21212121211"); // Maria
+        usuarios.add("21212121212"); // Juan
+        usuarios.add("21212121213");
+        usuarios.add("21212121214");
+        usuarios.add("21212121215");
     }
 
     public static void mostrarMenuInicial() {
@@ -59,14 +62,15 @@ public class Avance01 {
                 }
                 break;
             case 2:
-                registrarUsuario();
-                iniciarPrograma();
+                if (registrarUsuario()) {
+                    iniciarPrograma(); // Solo si el registro es exitoso
+                }
                 break;
             case 3:
                 System.out.println("Saliendo del programa...");
                 break;
             default:
-                System.out.println("Opción inválida. Intente de nuevo.");
+                mostrarMensajeOpcionInvalida();
         }
     }
 
@@ -84,27 +88,31 @@ public class Avance01 {
         }
     }
 
-    public static void registrarUsuario() {
+    public static boolean registrarUsuario() {
         System.out.println("\nRegistro de Usuario");
         String matricula;
 
         while (true) {
-            System.out.print("Ingrese su matrícula: ");
+            System.out.print("Ingrese su matrícula (o ingrese 0 para volver al menú anterior): ");
             matricula = limpiarMatricula(scanner.nextLine());
 
-            if (!esMatriculaValida(matricula)) {
-                System.out.println("Matrícula inválida. Debe ser un número de 11 dígitos con un posible 'k' en la novena posición. Intente nuevamente.");
+            if (matricula.equals("0")) {
+                System.out.println("Volviendo al menú principal...");
+                return false; // Indica que el usuario decidió volver
             } else if (usuarios.contains(matricula)) {
                 System.out.println("El usuario ya está registrado. Por favor, inicie sesión.");
-                return;
+                return false; // No se completa el registro
+            } else if (!esMatriculaValida(matricula)) {
+                System.out.println("Matrícula inválida. Debe ser un número de 11 dígitos con un posible 'k' en la novena posición. Intente nuevamente.");
             } else {
-                break;
+                break; // Sale del bucle si la matrícula es válida y no está registrada
             }
         }
 
         usuarios.add(matricula);
         matriculaActual = matricula;
         System.out.println("Usuario registrado exitosamente.");
+        return true; // Registro exitoso
     }
 
     private static String limpiarMatricula(String matricula) {
@@ -165,7 +173,7 @@ public class Avance01 {
                 System.out.println("Saliendo del programa...");
                 break;
             default:
-                System.out.println("Opción inválida. Intente de nuevo.");
+                mostrarMensajeOpcionInvalida();
         }
     }
 
@@ -176,13 +184,12 @@ public class Avance01 {
     }
 
     private static void mostrarDisponibilidadLogias(List<Integer> logias, String mensaje) {
-        System.out.print("\n" + mensaje + " ");
+        System.out.print(" " + mensaje + " ");
         logias.stream()
                 .filter(logia -> !usuariosConReserva.contains(logia.toString()))
                 .forEach(logia -> System.out.print("Logia " + logia + " "));
         System.out.println(); // Añade un salto de línea después de mostrar todas las logias
     }
-
 
     public static void reservarLogia() {
         if (verificarReservaExistente()) return;
@@ -211,12 +218,19 @@ public class Avance01 {
         System.out.println("1.- Logia para 7 personas");
         System.out.println("2.- Logia para 5 personas");
         System.out.println("3.- Logia para 3 personas");
+        System.out.println("4.- Salir");  // Añade la opción para salir
 
-        int opcion = solicitarOpcion("Ingrese una opción: ", 1, 3);
+        int opcion = solicitarOpcion("Ingrese una opción: ", 1, 4);
+
+        if (opcion == 4) {
+            System.out.println("Cancelando la reserva y volviendo al menú anterior...");
+            return null;  // Retorna null si el usuario elige salir
+        }
+
         List<Integer> logiasSeleccionadas = seleccionarLogiasPorOpcion(opcion);
 
         if (logiasSeleccionadas == null) {
-            System.out.println("Opción inválida.");
+            mostrarMensajeOpcionInvalida();
         }
 
         return logiasSeleccionadas;
@@ -235,15 +249,25 @@ public class Avance01 {
     }
 
     private static int obtenerCapacidadLogiaPorLogiaSeleccionada(List<Integer> logiasSeleccionadas) {
-        if (logiasSeleccionadas.equals(logias7Personas)) return 7;
-        if (logiasSeleccionadas.equals(logias5Personas)) return 5;
-        return 3;  // Asumiendo que si no es ninguna de las anteriores, es una logia de 3 personas.
+        if (logiasSeleccionadas == logias7Personas) {
+            return 7;
+        } else if (logiasSeleccionadas == logias5Personas) {
+            return 5;
+        } else {
+            return 3; // Asumiendo que si no es ninguna de las anteriores, es una logia de 3 personas.
+        }
     }
 
+
     private static void completarReserva(int numeroLogia, int capacidad) {
-        solicitarIntegrantes(numeroLogia, capacidad);
-        logiaReservadaActual = numeroLogia;
-        System.out.println("Logia " + logiaReservadaActual + " reservada con éxito.");
+        // Cambia para que devuelva si la reserva fue cancelada
+        boolean reservaCompletada = solicitarIntegrantes(numeroLogia, capacidad);
+        if (reservaCompletada) {
+            logiaReservadaActual = numeroLogia;
+            System.out.println("Logia " + logiaReservadaActual + " reservada con éxito.");
+        } else {
+            System.out.println("La reserva fue cancelada.");
+        }
     }
 
     private static List<Integer> seleccionarLogiasPorOpcion(int opcion) {
@@ -255,19 +279,24 @@ public class Avance01 {
         };
     }
 
-    private static void solicitarIntegrantes(int numeroLogia, int capacidad) {
+    private static boolean solicitarIntegrantes(int numeroLogia, int capacidad) {
         List<String> integrantes = new ArrayList<>();
-        for (int i = 1; i < capacidad; i++) { // Comienza en 1 para omitir al usuario actual
+
+        // El número de compañeros a pedir es exactamente capacidad - 1, ya que el usuario actual ocupa un lugar
+        int cantidadCompañeros = capacidad - 1;
+
+        // Iterar exactamente cantidadCompañeros veces
+        for (int i = 1; i <= cantidadCompañeros; i++) {
             String matricula;
             while (true) {
                 System.out.print("Matrícula del compañero " + i + " (ingrese 0 para cancelar): ");
                 matricula = limpiarMatricula(scanner.nextLine());
 
                 if (matricula.equals("0")) {
-                    System.out.println("Reserva cancelada.");
-                    return;
+                    System.out.println("Cancelando la reserva de la logia " + numeroLogia + ".");
+                    return false;  // Retorna false para indicar que se canceló la operación
                 } else if (matricula.equals(matriculaActual)) {
-                    System.out.println("No sabia que existías dos veces XD");
+                    System.out.println("No puedes ingresar tu propia matrícula. Ingresa una matrícula distinta.");
                 } else if (!usuarios.contains(matricula)) {
                     System.out.println("La matrícula " + matricula + " no está registrada. Por favor, ingrese una matrícula válida.");
                 } else if (integrantes.contains(matricula)) {
@@ -276,11 +305,17 @@ public class Avance01 {
                     break;
                 }
             }
-            integrantes.add(matricula);
+            integrantes.add(matricula);  // Agregar cada matrícula válida al listado de compañeros
         }
-        // Agrega la matrícula del usuario actual
+
+        // Agrega la matrícula del usuario actual a la lista de reservas
         usuariosConReserva.add(String.valueOf(numeroLogia));
+        return true;  // Retorna true si todo fue completado exitosamente
     }
+
+
+
+
 
     public static void cancelarReserva() {
         if (logiaReservadaActual == 0) {
@@ -304,5 +339,9 @@ public class Avance01 {
                 scanner.nextLine();
             }
         }
+    }
+
+    private static void mostrarMensajeOpcionInvalida() {
+        System.out.println("Opción inválida. Por favor, inténtelo de nuevo.");
     }
 }
