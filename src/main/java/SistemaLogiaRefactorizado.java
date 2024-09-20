@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Avance01Ordenado2 {
+public class SistemaLogiaRefactorizado {
 
     private static final Scanner scanner = new Scanner(System.in);
     private static final List<Integer> logias7Personas = new ArrayList<>();
@@ -11,31 +11,20 @@ public class Avance01Ordenado2 {
     private static String matriculaActual = null;
 
     public static void main(String[] args) {
-        EjecutarSistema();
+        iniciarSistema(); // Único método para iniciar todo el programa
     }
 
-    public static void EjecutarSistema() {
-        cargarLogias();
-        cargarUsuarios();
-
-        int opcion;
-        do {
-            mostrarMenuInicial();
-            opcion = solicitarOpcion("Seleccione una opción: ", 1, 3);
-            procesarOpcionInicial(opcion);
-        } while (opcion != 3);
+    public static void iniciarSistema() {
+        inicializarLogias();
+        inicializarUsuarios();
+        ejecutarOpcionesSistema();
     }
 
     // Modularización de usuarios
-    public static void cargarUsuarios() {
-        usuarios.add("21212121k21");
-        usuarios.add("21212121211");
-        usuarios.add("21212121212");
-        usuarios.add("21212121213");
-        usuarios.add("21212121214");
-        usuarios.add("21212121215");
-        usuarios.add("21212121217");
-        // Agrega más usuarios si es necesario...
+    public static void inicializarUsuarios() {
+        usuarios.add("21212121k21"); // Nikazo
+        usuarios.add("21212121211"); // Maria
+        usuarios.add("21212121212"); // Juan
     }
 
     public static boolean iniciarSesion() {
@@ -60,22 +49,10 @@ public class Avance01Ordenado2 {
     public static boolean registrarUsuario() {
         System.out.println("\nRegistro de Usuario");
         String matricula;
+        matricula = registrarUsuarioOpcion();
 
-        while (true) {
-            System.out.print("Ingrese su matrícula (o ingrese 0 para volver al menú anterior): ");
-            matricula = limpiarMatricula(scanner.nextLine());
-
-            if (matricula.equals("0")) {
-                System.out.println("Volviendo al menú principal...");
-                return false;
-            } else if (usuarios.contains(matricula)) {
-                System.out.println("El usuario ya está registrado. Por favor, inicie sesión.");
-                return false;
-            } else if (!esMatriculaValida(matricula)) {
-                System.out.println("Matrícula inválida. Intente nuevamente.");
-            } else {
-                break;
-            }
+        if (matricula == null) {
+            return false;  // Se cancela el registro
         }
 
         usuarios.add(matricula);
@@ -84,8 +61,27 @@ public class Avance01Ordenado2 {
         return true;
     }
 
+    public static String registrarUsuarioOpcion() {
+        while (true) {
+            System.out.print("Ingrese su matrícula (o ingrese 0 para volver al menú anterior): ");
+            String matricula = limpiarMatricula(scanner.nextLine());
+
+            if (matricula.equals("0")) {
+                System.out.println("Volviendo al menú principal...");
+                return null;  // Se cancela el registro
+            } else if (usuarios.contains(matricula)) {
+                System.out.println("El usuario ya está registrado. Por favor, inicie sesión.");
+                return null;  // Se cancela el registro
+            } else if (!esMatriculaValida(matricula)) {
+                System.out.println("Matrícula inválida. Intente nuevamente.");
+            } else {
+                return matricula;  // Retornamos la matrícula válida
+            }
+        }
+    }
+
     // Modularización de logias
-    public static void cargarLogias() {
+    public static void inicializarLogias() {
         inicializarLogiasPorCapacidad(logias7Personas, 3);
         inicializarLogiasPorCapacidad(logias5Personas, 4);
         inicializarLogiasPorCapacidad(logias3Personas, 3);
@@ -164,7 +160,7 @@ public class Avance01Ordenado2 {
         switch (opcion) {
             case 1:
                 if (iniciarSesion()) {
-                    iniciarPrograma();
+                    ejecutarOpcionesSistema();
                 }
                 break;
             case 2:
@@ -217,7 +213,7 @@ public class Avance01Ordenado2 {
         }
     }
 
-    public static void iniciarPrograma() {
+    public static void ejecutarOpcionesSistema() {
         int opcion;
         do {
             mostrarMenuPrincipal();
@@ -244,15 +240,12 @@ public class Avance01Ordenado2 {
         mostrarDisponibilidadLogias(logias3Personas, "Logias de 3 personas disponibles:", 3);
     }
 
-    public static void tamanoLogia(){
+    private static List<Integer> seleccionarLogias() {
         System.out.println("\nSeleccione el tamaño de la logia a reservar:");
         System.out.println("1.- Logia para 7 personas");
         System.out.println("2.- Logia para 5 personas");
         System.out.println("3.- Logia para 3 personas");
         System.out.println("4.- Cancelar");
-    }
-    private static List<Integer> seleccionarLogias() {
-        tamanoLogia();
 
         int opcion = solicitarOpcion("Ingrese una opción: ", 1, 4);
         if (opcion == 4) {
